@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <form method='post' action="">
+        {% csrf_token %}
+        <div>
+            <label>Username</label>
+            <input type='text' placeholder="Enter Username" name='username'>
+        </div>
+
+        <div>
+            <label>Password</label>
+            <input type='text' placeholder="Enter Password" name='password'>
+        </div>
+
+        <div>
+            <label>Email</label>
+            <input type='text' placeholder="Enter Email" name='email'>
+        </div>
+
+        <Button type='submit' name='Signup'>Signup</Button>
+    </form>
+</body>
+</html>

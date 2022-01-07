@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    {% load static %}
+    <form method='post' enctype="multipart/form-data">
+        {% csrf_token %}
+        Select Choose File to upload a picture <br>
+        <input type='file' id='myFile' name='filename'></input> <br>
+        <input type='submit'></input>
+    </form>
+</body>
+</html>
