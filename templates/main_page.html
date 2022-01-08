@@ -10,5 +10,9 @@
         <input type='file' id='myFile' name='filename'></input> <br>
         <input type='submit'></input>
     </form>
+    
+    {% for image in images %}
+    <img src='/media/{{image}}' width="200" height="200"/>
+    {% endfor %}
 </body>
 </html>

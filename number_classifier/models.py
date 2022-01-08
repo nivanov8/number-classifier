@@ -1,6 +1,6 @@
+from typing_extensions import Required
 from django.db import models
-from mongoengine import Document, StringField
-from mongoengine.fields import ImageField
+from mongoengine import Document, StringField, ImageField, ReferenceField
 from PIL import Image
 
 # Create your models here.
@@ -10,4 +10,7 @@ class User(Document):
     email = StringField(max_length=30, required=False)
 
 class UploadedImage(Document):
-    image = ImageField(upload_to="images/")
+    image = ImageField()
+    user = ReferenceField(User, required=True)
+    path = StringField()
+    image_name = StringField()
