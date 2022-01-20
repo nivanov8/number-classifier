@@ -11,12 +11,24 @@ from torchvision.transforms import ToTensor, Lambda, Compose
 import matplotlib.pyplot as plt
 import torchvision.models as models
 import torchvision.transforms.functional as F
+import numpy as np
+import idx2numpy
+import cv2
+from PIL import Image
 
 
-transform = transforms.Compose([
+transform_training = transforms.Compose([
     ToTensor(),
     #torchvision.transforms.Grayscale(num_output_channels=1)
-    torchvision.transforms.Lambda(lambda x: F.invert(x))
+    torchvision.transforms.Lambda(lambda x: F.invert(x)),
+    torchvision.transforms.Normalize((0.1307,), (0.3081,)),
+    #torchvision.transforms.RandomRotation(10)
+])
+
+transform_test = transforms.Compose([
+    ToTensor(),
+    torchvision.transforms.Lambda(lambda x: F.invert(x)),
+    torchvision.transforms.Normalize((0.1307,), (0.3081,))
 ])
 
 
@@ -25,7 +37,7 @@ training_data = datasets.MNIST(
     root="data",
     train=True,
     download=True,
-    transform=transform
+    transform=transform_training
 )
 
 #Download test data from dataset
@@ -33,16 +45,14 @@ test_data = datasets.MNIST(
     root="data",
     train=False,
     download=True,
-    transform=transform
+    transform=transform_test
 )
 
-'''
-    #show image
-    print(training_data[0][0].shape)
-    plt.imshow(training_data[0][0].permute(1, 2, 0))
-    plt.show()
-'''
 
+    #show image
+#print(training_data[4][0].shape)
+#plt.imshow(training_data[5][0].permute(1, 2, 0))
+#plt.show()
 
 #Create data loaders
 train_dataloader = DataLoader(training_data, batch_size=64)
@@ -55,28 +65,42 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
-        self.flatten = nn.Flatten()
-        self.linear_sigmoid = nn.Sequential(
-            nn.Linear(28*28, 10),
-            nn.Sigmoid(),
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(1, 6, 5), 
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
 
-    def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_sigmoid(x)
-        return logits
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(6, 16, 5), 
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
 
+        self.out = nn.Linear(16*4*4, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+
+        #print(x.shape)
+        x = x.view(x.size(0), -1)
+
+        output = self.out(x)
+        return output
+        
 model = NeuralNetwork().to(device)
 
 #Loss function and optimizer
 loss_function = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.05)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
 
 def train(dataloader, model, loss_function, optimizer):
     size = len(dataloader.dataset)
     model.train()
     for batch, (X, y) in enumerate(dataloader):
+        #print(X.shape)
         X, y = X.to(device), y.to(device)
 
         #Compute error
@@ -118,9 +142,5 @@ if __name__ == "__main__":
         test(test_dataloader, model, loss_function)
     print("Done!")
 
-    torch.save(model.state_dict(), "model.pth")
+    torch.save(model.state_dict(), "number_classifier/Neural_Network/model.pth")
     print("Model saved")
-
-
-
-

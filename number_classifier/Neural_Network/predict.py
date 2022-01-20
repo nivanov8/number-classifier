@@ -4,6 +4,7 @@ from .Model import NeuralNetwork
 from PIL import Image
 from torchvision.transforms import ToTensor
 import sys
+import os
 
 
 
@@ -30,7 +31,7 @@ class Predict():
     
     def reloadModel(self):
         model = NeuralNetwork()
-        model.load_state_dict(torch.load(r"C:\Users\nicki\Desktop\number-classifier\number_classifier\Neural_Network\model.pth"))
+        model.load_state_dict(torch.load(r"number_classifier/Neural_Network/model.pth"))
         return model
 
     def processImage(self, image):
@@ -38,6 +39,7 @@ class Predict():
         image1 = Image.open(image).convert("L")
         resized_image = image1.resize((28, 28))
         data = convert_tensor(resized_image)
+        data = data[None, :]
         return data
 
     def predict(self):

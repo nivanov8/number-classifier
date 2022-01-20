@@ -61,23 +61,18 @@ def main_signup(request):
 def main_page(request, user_id):
     if request.method == "GET":
         user = User.objects(id=user_id).first()
-        images = UploadedImage.objects(user=user).limit(5)
+        images = UploadedImage.objects(user=user)
 
-        #test
-        '''
-        img = UploadedImage.objects().first()
-        print(img.image)
-
-        im = Image.open(img.image)
-        im.show()'''
-
+        if len(images) > 5:
+            recent_images = images[len(images)-5:]
+        elif len(images) <= 5:
+            recent_images = images
 
         #convert queryset to list
         user_images = []
-        for image in images:
+        for image in recent_images:
             user_images.append(image.image_name)
-            #user_images.append(image.image)
-            #i.show()
+
         return render(request, "main_page.html",{"images": user_images})
 
     elif request.method == "POST":
@@ -90,7 +85,7 @@ def main_page(request, user_id):
             #save image to media folder
             im = Image.open(image)
             image_name = str(image)
-            path = "C:/Users/nicki/Desktop/number-classifier/media/" + image_name
+            path = "media/" + image_name
             im.save(path)
 
             user = User.objects(id=user_id).first()
@@ -98,18 +93,6 @@ def main_page(request, user_id):
 
             print("saved image")
 
-            '''
-            img = UploadedImage.objects().first()
-            print(img.image)
-
-            im = Image.open(img.image)
-            im.show()
-            
-
-            for i in range(2):
-                print(os.getcwd())
-                os.system("python number_classifier/Neural_Network/predict.py " + )
-            '''
             #make a prediction
             predict = Predict(image.image)
             prediction = predict.predict()
