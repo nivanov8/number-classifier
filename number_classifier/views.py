@@ -8,7 +8,7 @@ from .Neural_Network.predict import Predict
 import base64
 from io import BytesIO
 
-# landing page
+# main page 
 def index(request):
     if request.method == "GET":
         return render(request, "index.html")
