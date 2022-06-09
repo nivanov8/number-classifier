@@ -21,5 +21,5 @@ urlpatterns = [
     path('', views.index),
     path("main_login", views.main_login),
     path("main_signup", views.main_signup),
-    path("main_page/<str:user_id>", views.main_page),
+    path("main_page/<str:user_id>/<str:prediction>", views.main_page),
 ]

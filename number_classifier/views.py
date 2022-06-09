@@ -30,7 +30,7 @@ def main_login(request):
         try:
             user = User.objects().get(username=username, password=password)
             user_id = user.id
-            return redirect(f'/main_page/{user_id}')
+            return redirect(f'/main_page/{user_id}/{None}')
         
         except User.DoesNotExist:
             return render(request, "main_login.html")
@@ -55,10 +55,10 @@ def main_signup(request):
         else:
             user = User(username=username, password=password, email=email).save() #save the user
             user_id = user.id
-            return redirect(f'/main_page/{user_id}')
+            return redirect(f'/main_page/{user_id}/{None}')
         
 
-def main_page(request, user_id):
+def main_page(request, user_id, prediction):
     if request.method == "GET":
         user = User.objects(id=user_id).first()
         images = UploadedImage.objects(user=user)
@@ -73,7 +73,15 @@ def main_page(request, user_id):
         for image in recent_images:
             user_images.append(image.image_name)
 
-        return render(request, "main_page.html",{"images": user_images})
+        #for easy render to page try cast prediction to integer
+        try:
+            prediction = int(prediction)
+        except:
+            pass
+
+        print(type(prediction))
+
+        return render(request, "main_page.html",{"images": user_images, 'prediction': prediction})
 
     elif request.method == "POST":
         if "filename" not in request.FILES:
@@ -96,7 +104,6 @@ def main_page(request, user_id):
             #make a prediction
             predict = Predict(image.image)
             prediction = predict.predict()
-            print(prediction)
-
             
-            return redirect(f"/main_page/{user_id}")
+            
+            return redirect(f'/main_page/{user_id}/{prediction}')
