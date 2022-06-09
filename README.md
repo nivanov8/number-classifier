@@ -17,5 +17,5 @@ This is a fairly simple project, you can create a new user account, login as an 
 image, a prediction of what the number submitted is printed out on the screen. 
 
 ### How to run the project
-1. Ensure you have PyTorch, Torchvision, mongoengine and django packages installed
+1. Ensure you have PyTorch, Torchvision, mongoengine and Django packages installed
 2. In the same directory as `manage.py` execute the following command: `python manage.py runserver`
